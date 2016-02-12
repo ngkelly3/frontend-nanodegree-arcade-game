@@ -81,6 +81,7 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         // checkCollisions();
+        ctx.clearRect(0,0,canvas.width,canvas.height);
     }
 
     /* This is called by the update function and loops through all of the

@@ -31,14 +31,21 @@ Enemy.prototype.update = function(dt) {
 		this.x = 0;
 	};
 
+	// collision detection using rectangle approximation box
 	if (player.x < this.x + this.width &&
-   player.x + player.width > this.x &&
-   player.y < this.y + this.height &&
-   player.height + player.y > this.y) {
-    // collision detected!
-		player.x = 100;
-		player.y = 300;
-	}
+		player.x + player.width > this.x &&
+   		player.y < this.y + this.height &&
+   		player.height + player.y > this.y) {
+    	// collision detected!
+		// reset player position
+		player.reset(200,383);
+	};
+
+	// reset position if reaches the water
+	if (player.y < 0) {
+		var delay = 250;
+		setTimeout(function(){player.reset(200,383)}, delay);
+	};
 
 };
 
@@ -82,13 +89,16 @@ Player.prototype.handleInput = function(key) {
 		this.y += 83;
 	};
 };
+Player.prototype.reset = function(x,y) {
+	this.x = x;
+	this.y = y;
+}
 
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-
 
 var allEnemies = [];
 first = new Enemy(0,60,500);
