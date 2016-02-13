@@ -44,7 +44,7 @@ Enemy.prototype.update = function(dt) {
 	// reset position if reaches the water
 	if (player.y < 0) {
 		var delay = 250;
-		setTimeout(function(){player.reset(200,383)}, delay);
+		setTimeout(function(){player.reset(this.x,this.y)}, delay);
 	};
 
 };
@@ -59,13 +59,11 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 
 var Player = function(x, y) {
-	this.sprite = 'images/char-boy.png';
-	this.x = x;
-	this.y = y;
 
-	// Collision Detection - Bounding Box
-	this.width = 50;
-	this.height = 50;
+	// Use superclass Enemy to construct Player
+	Enemy.call(this, x, y);
+	this.sprite = 'images/char-boy.png';
+
 };
 Player.prototype.update = function(dt) {
 	// did not need to implement
