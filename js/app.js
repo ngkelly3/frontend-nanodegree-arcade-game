@@ -31,20 +31,10 @@ Enemy.prototype.update = function(dt) {
 		this.x = 0;
 	};
 
-	// collision detection using rectangle approximation box
-	if (player.x < this.x + this.width &&
-		player.x + player.width > this.x &&
-   		player.y < this.y + this.height &&
-   		player.height + player.y > this.y) {
-    	// collision detected!
-		// reset player position
-		player.reset(200,383);
-	};
-
-	// reset position if reaches the water
+	// reset char position if reaches the water
 	if (player.y < 0) {
 		var delay = 250;
-		setTimeout(function(){player.reset(this.x,this.y)}, delay);
+		setTimeout(function(){player.reset(200,383)}, delay);
 	};
 
 };
@@ -65,14 +55,31 @@ var Player = function(x, y) {
 	this.sprite = 'images/char-boy.png';
 
 };
+
 Player.prototype.update = function(dt) {
-	// did not need to implement
+	player.checkCollision();
 };
+
+Player.prototype.checkCollision = function() {
+
+	for (var i=0; i < allEnemies.length; i++) {
+		if (this.x < allEnemies[i].x + allEnemies[i].width &&
+			this.x + this.width > allEnemies[i].x &&
+	   		this.y < allEnemies[i].y + allEnemies[i].height &&
+	   		this.height + this.y > allEnemies[i].y) {
+	    	// collision detected!
+			// reset player position
+			this.reset(200,383);
+			break;
+		};
+	};
+};
+
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
-Player.prototype.handleInput = function(key) {
 
+Player.prototype.handleInput = function(key) {
 	// redo with canvas.width and canvas.height
 	if (key == 'left' && this.x > 0) {
 		this.x -= 101;
@@ -91,8 +98,6 @@ Player.prototype.reset = function(x,y) {
 	this.x = x;
 	this.y = y;
 }
-
-
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
