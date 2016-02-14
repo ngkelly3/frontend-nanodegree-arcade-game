@@ -138,6 +138,18 @@ var Engine = (function(global) {
         }
 
         renderEntities();
+
+        renderScore();
+    }
+
+    function renderScore() {
+
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        ctx.font = "24px Helvetica";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "bottom";
+        ctx.fillText("Water Jumps: " + waterScore, 32, 32);
+
     }
 
     /* This function is called by the render function and is called on each game

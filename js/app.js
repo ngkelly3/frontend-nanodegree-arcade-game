@@ -9,7 +9,7 @@ var Enemy = function(y, speed) {
 
     // Setting the Enemy initial location
     this.y = y;
-    this.x = 0;
+    this.x = -60;
 
 	// Setting the Enemy speed
     this.speed = speed;
@@ -20,17 +20,6 @@ var Enemy = function(y, speed) {
 
 };
 
-function randomSpeed() {
-	return Math.random()*500;
-};
-
-function randomRow() {
-
-	var rowArray = [226, 143, 60]
-    return rowArray[Math.floor(Math.random()*(3))];
-
-};
-
 // Update the enemy's position
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
@@ -38,7 +27,7 @@ Enemy.prototype.update = function(dt) {
     // Updates the Enemy location
 	this.x = this.x + this.speed*dt;
 	if (this.x > 505) {
-		this.x = 0;
+		this.x = -60;
 	};
 
 	// Handles collision
@@ -86,15 +75,19 @@ Player.prototype.checkCollision = function() {
 	};
 };
 
+
+
 Player.prototype.reset = function() {
 
 	//reset char position if reaches the water
 	if (this.y < 0) {
-		var delay = 250;
-		setTimeout(function(){player.setpos()}, delay);
+		waterScore++;
+		var delay = 10;
+		setTimeout(function(){player.resetpos()}, delay);
 	}
 	if (this.checkCollision() == true) {
 		this.resetpos();
+		waterScore = 0;
 	};
 
 };
@@ -104,6 +97,11 @@ Player.prototype.resetpos = function() {
 	// Reset player back to origin
 	this.x = 200;
 	this.y = 383;
+};
+
+var resetpos = function() {
+	x = 200;
+	y = 383
 };
 
 Player.prototype.render = function() {
@@ -125,6 +123,20 @@ Player.prototype.handleInput = function(key) {
 		this.y += 83;
 	};
 };
+
+function randomSpeed() {
+	return Math.random()*500;
+};
+
+function randomRow() {
+
+	var rowArray = [226, 143, 60]
+    return rowArray[Math.floor(Math.random()*(3))];
+
+};
+
+// Initializing score
+var waterScore = 0;
 
 // Instantiate 4 enemies and player
 var allEnemies = [];
