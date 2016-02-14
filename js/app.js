@@ -31,11 +31,9 @@ Enemy.prototype.update = function(dt) {
 		this.x = 0;
 	};
 
-	// reset char position if reaches the water
-	if (player.y < 0) {
-		var delay = 250;
-		setTimeout(function(){player.reset(200,383)}, delay);
-	};
+	player.checkCollision();
+
+
 
 };
 
@@ -57,7 +55,10 @@ var Player = function(x, y) {
 };
 
 Player.prototype.update = function(dt) {
-	player.checkCollision();
+
+	//checks if game was won
+	this.reset();
+
 };
 
 Player.prototype.checkCollision = function() {
@@ -69,10 +70,28 @@ Player.prototype.checkCollision = function() {
 	   		this.height + this.y > allEnemies[i].y) {
 	    	// collision detected!
 			// reset player position
-			this.reset(200,383);
+			return true;
 			break;
 		};
 	};
+};
+
+Player.prototype.reset = function() {
+
+	//reset char position if reaches the water
+	if (this.y < 0) {
+		var delay = 250;
+		setTimeout(function(){player.setpos()}, delay);
+	}
+	if (this.checkCollision() == true) {
+		this.setpos();
+	};
+
+};
+
+Player.prototype.setpos = function() {
+	this.x = 200;
+	this.y = 383;
 };
 
 Player.prototype.render = function() {
@@ -94,10 +113,6 @@ Player.prototype.handleInput = function(key) {
 		this.y += 83;
 	};
 };
-Player.prototype.reset = function(x,y) {
-	this.x = x;
-	this.y = y;
-}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
