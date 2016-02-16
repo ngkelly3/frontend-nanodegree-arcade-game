@@ -40,6 +40,14 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+Enemy.prototype.reset = function() {
+
+		this.speed = randomSpeed();
+		this.y = randomRow();
+		this.x = -60;
+
+};
+
 // Player class
 var Player = function() {
 
@@ -48,8 +56,10 @@ var Player = function() {
 	this.sprite = 'images/char-boy.png';
 
 	// Set initial position
-	this.x = 200;
-	this.y = 383;
+	this.x = 202;
+	this.y = 375;
+	this.index = 0;
+	this.select = false;
 
 };
 
@@ -73,18 +83,24 @@ Player.prototype.checkCollision = function() {
 			break;
 		};
 	};
+
 };
-
-
 
 Player.prototype.reset = function() {
 
-	//reset char position if reaches the water
+	// reset char position if reaches the water
 	if (this.y < 0) {
 		waterScore++;
 		var delay = 10;
 		setTimeout(function(){player.resetpos()}, delay);
+
+		//reset enemy positions
+		for (i=0; i < allEnemies.length; i++) {
+			allEnemies[i].reset();
+		}
 	}
+
+	// reset score if hit enemy
 	if (this.checkCollision() == true) {
 		this.resetpos();
 		waterScore = 0;
@@ -95,13 +111,8 @@ Player.prototype.reset = function() {
 Player.prototype.resetpos = function() {
 
 	// Reset player back to origin
-	this.x = 200;
-	this.y = 383;
-};
-
-var resetpos = function() {
-	x = 200;
-	y = 383
+	this.x = 202;
+	this.y = 375;
 };
 
 Player.prototype.render = function() {
@@ -110,18 +121,45 @@ Player.prototype.render = function() {
 
 Player.prototype.handleInput = function(key) {
 
-	if (key == 'left' && this.x > 0) {
-		this.x -= 101;
+	// Select character - nested if loops - code rotates without stopping abruptly
+	if (this.select == false) {
+		var chars = ['images/char-boy.png', 'images/char-cat-girl.png', 'images/char-horn-girl.png', 'images/char-pink-girl.png', 'images/char-princess-girl.png'];
+
+		if (key == 'left' && this.index > 0 && this.index <= chars.length) {
+			this.index = this.index - 1;
+			this.sprite = chars[this.index];
+		} else if (key == 'left' && this.index == 0) {
+			this.index = chars.length - 1;
+			this.sprite = chars[this.index];
+		};
+		if (key == 'right' && this.index >= 0 && this.index < chars.length-1) {
+			this.index = this.index + 1;
+			this.sprite = chars[this.index];
+		} else if (key == 'right' && this.index == chars.length-1) {
+			this.index = 0;
+			this.sprite = chars[this.index];
+		};
+		if (key == 'enter') {
+			this.select = true;
+		};
 	};
-	if (key == 'right' && this.x < 303) {
-		this.x += 101;
+
+	// move player once character selected
+	if (this.select == true) {
+		if (key == 'left' && this.x > 0) {
+			this.x -= 101;
+		};
+		if (key == 'right' && this.x < 303) {
+			this.x += 101;
+		};
+		if (key == 'up' && this.y > 0) {
+			this.y -= 83;
+		};
+		if (key == 'down' && this.y < 357) {
+			this.y += 83;
+		};
 	};
-	if (key == 'up' && this.y > 0) {
-		this.y -= 83;
-	};
-	if (key == 'down' && this.y < 357) {
-		this.y += 83;
-	};
+
 };
 
 function randomSpeed() {
@@ -129,10 +167,23 @@ function randomSpeed() {
 };
 
 function randomRow() {
-
 	var rowArray = [226, 143, 60]
     return rowArray[Math.floor(Math.random()*(3))];
+};
 
+
+// Character Selector Code
+// Logic:  Call charSelector from Player function (which is linked to engine.js)
+// charSelector to return a sprite if "enter" is pushed
+// remove charselector sprite
+var charSelector = function() {
+	this.sprite = 'images/Selector.png' // receive input from .change function
+	this.x = 202;
+	this.y = 375;
+};
+
+charSelector.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 // Initializing score
@@ -144,7 +195,11 @@ for (i = 0; i < 4; i++) {
 	allEnemies[i] = new Enemy(randomRow(), randomSpeed());
 };
 
+var charselector = new charSelector();
 var player = new Player();
+
+
+
 
 
 // This listens for key presses and sends the keys to your
@@ -154,8 +209,10 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        13: 'enter'
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
+
 });
