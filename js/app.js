@@ -123,7 +123,11 @@ Player.prototype.handleInput = function(key) {
 
 	// Select character - nested if loops - code rotates without stopping abruptly
 	if (this.select == false) {
-		var chars = ['images/char-boy.png', 'images/char-cat-girl.png', 'images/char-horn-girl.png', 'images/char-pink-girl.png', 'images/char-princess-girl.png'];
+		var chars = ['images/char-boy.png',
+		'images/char-cat-girl.png',
+		'images/char-horn-girl.png',
+		'images/char-pink-girl.png',
+		'images/char-princess-girl.png'];
 
 		if (key == 'left' && this.index > 0 && this.index <= chars.length) {
 			this.index = this.index - 1;
@@ -149,7 +153,7 @@ Player.prototype.handleInput = function(key) {
 		if (key == 'left' && this.x > 0) {
 			this.x -= 101;
 		};
-		if (key == 'right' && this.x < 303) {
+		if (key == 'right' && this.x < 404) {
 			this.x += 101;
 		};
 		if (key == 'up' && this.y > 0) {
@@ -177,7 +181,7 @@ function randomRow() {
 // charSelector to return a sprite if "enter" is pushed
 // remove charselector sprite
 var charSelector = function() {
-	this.sprite = 'images/Selector.png' // receive input from .change function
+	this.sprite = 'images/Selector.png'; // receive input from .change function
 	this.x = 202;
 	this.y = 375;
 };
@@ -186,8 +190,48 @@ charSelector.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+// Collectables Code
+
+var collectItems = function(x, y) {
+	this.sprite1 = randomItem(); // receive input from .change function
+	this.x = x;
+	this.y = y;
+};
+
+collectItems.prototype.update = function() {
+
+};
+
+collectItems.prototype.render = function() {
+
+    ctx.drawImage(Resources.get(this.sprite1), this.x, this.y);
+
+};
+
+function randomItem() {
+	var item = ['images/Gem_Blue.png',
+        'images/Gem_Green.png',
+        'images/Gem_Orange.png',
+        'images/Heart.png',
+        'images/Key.png',
+        'images/Rock.png',
+        'images/Star.png'];
+
+    return item[Math.floor(Math.random()*7)];
+};
+function randomItemLocX() {
+	var x = [0, 101, 202, 303, 404];
+	return x[Math.floor(Math.random()*5)];
+};
+function randomItemLocY() {
+	var y = [63, 146, 229];
+	return y[Math.floor(Math.random()*3)];
+
+};
+
 // Initializing score
 var waterScore = 0;
+
 
 // Instantiate 4 enemies and player
 var allEnemies = [];
@@ -195,10 +239,13 @@ for (i = 0; i < 4; i++) {
 	allEnemies[i] = new Enemy(randomRow(), randomSpeed());
 };
 
+var collectitem = [];
+for (i = 0; i < 7; i++) {
+	collectitem[i] = new collectItems(randomItemLocX(), randomItemLocY());
+};
+
 var charselector = new charSelector();
 var player = new Player();
-
-
 
 
 
