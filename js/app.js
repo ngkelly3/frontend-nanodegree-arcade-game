@@ -102,10 +102,11 @@ Player.prototype.reset = function() {
 			allEnemies[i].reset();
 		};
 
-		//reset item positions
+		//reset item positions w/o overlap
 		for (i = 0; i < 7; i++) {
 			item[i].reset();
 		};
+		renderOverlap();
 	}
 
 	// reset score if hit enemy
@@ -247,6 +248,10 @@ collectItems.prototype.itemCollision = function() {
 		};
 	};
 };
+collectItems.prototype.changeItemLoc = function() {
+	this.x = randomItemLocX();
+	this.y = randomItemLocY();
+};
 
 collectItems.prototype.render = function() {
 
@@ -275,6 +280,28 @@ function randomItemLocY() {
 
 };
 
+// check overlap function
+function checkOverlap() {
+	mainLoop:
+	for (i = 0; i < item.length; i++) {
+		for (j = 0; j < item.length; j++) {
+			if (item[i].x == item[j].x && item[i].y == item[j].y && i != j) {
+				return true;
+				break mainLoop;
+			};
+		};
+	};
+	return false;
+};
+
+function renderOverlap() {
+	while (checkOverlap() == true) {
+		for (i = 0; i < 7; i++) {
+			item[i].changeItemLoc();
+		};
+	};
+};
+
 // Initializing score
 var waterScore = 0;
 var itemScore = 0;
@@ -286,10 +313,13 @@ for (i = 0; i < 4; i++) {
 	allEnemies[i] = new Enemy(randomRow(), randomSpeed());
 };
 
+// Instantiate new items
 var item = [];
 for (i = 0; i < 7; i++) {
 	item[i] = new collectItems(randomItemLocX(), randomItemLocY());
 };
+// Re-render items if overlap exists
+renderOverlap();
 
 var charselector = new charSelector();
 var player = new Player();
