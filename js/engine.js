@@ -96,11 +96,11 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
 
-        item.forEach(function(item) {
-            item.update();
-        });
-
         player.update();
+
+        item.forEach(function(collect) {
+            collect.update();
+        });
     }
 
     /* This function initially draws the "game level", it will then call

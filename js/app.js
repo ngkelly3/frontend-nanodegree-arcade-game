@@ -58,6 +58,8 @@ var Player = function() {
 	// Set initial position
 	this.x = 202;
 	this.y = 375;
+	this.prevX = 0;
+	this.prevY = 0;
 	this.index = 0;
 	this.select = false;
 
@@ -72,6 +74,7 @@ Player.prototype.update = function(dt) {
 
 Player.prototype.checkCollision = function() {
 
+	// check enemy collision
 	for (var i=0; i < allEnemies.length; i++) {
 		if (this.x < allEnemies[i].x + allEnemies[i].width &&
 			this.x + this.width > allEnemies[i].x &&
@@ -155,6 +158,11 @@ Player.prototype.handleInput = function(key) {
 
 	// move player once character selected
 	if (this.select == true) {
+
+		// save state of current position before moving
+		this.prevX = this.x;
+		this.prevY = this.y;
+
 		if (key == 'left' && this.x > 0) {
 			this.x -= 101;
 		};
@@ -167,6 +175,7 @@ Player.prototype.handleInput = function(key) {
 		if (key == 'down' && this.y < 357) {
 			this.y += 83;
 		};
+
 	};
 
 };
@@ -198,12 +207,17 @@ charSelector.prototype.render = function() {
 // Collectables Code
 
 var collectItems = function(x, y) {
-	this.sprite1 = randomItem(); // receive input from .change function
+	this.sprite = randomItem(); // receive input from .change function
 	this.x = x;
 	this.y = y;
+	this.width = 50;
+	this.height = 50;
 };
 
 collectItems.prototype.update = function() {
+
+	// Handles collision
+	this.itemCollision()
 
 };
 
@@ -214,9 +228,29 @@ collectItems.prototype.reset = function() {
 
 };
 
+collectItems.prototype.itemCollision = function() {
+
+ 	if (player.x < this.x + this.width &&
+		player.x + player.width > this.x &&
+		player.y < this.y + this.height &&
+		player.height + player.y > this.y) {
+		// collision detected!
+		// delete item
+		if (this.sprite == 'images/Rock.png') {
+			player.x = player.prevX;
+			player.y = player.prevY;
+		} else {
+			itemScore++;
+
+			// redo below properly, terrible way to make an item disappear
+			this.x = -100;
+		};
+	};
+};
+
 collectItems.prototype.render = function() {
 
-    ctx.drawImage(Resources.get(this.sprite1), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 
 };
 
@@ -243,6 +277,7 @@ function randomItemLocY() {
 
 // Initializing score
 var waterScore = 0;
+var itemScore = 0;
 
 
 // Instantiate 4 enemies and player
@@ -258,8 +293,6 @@ for (i = 0; i < 7; i++) {
 
 var charselector = new charSelector();
 var player = new Player();
-
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
