@@ -97,7 +97,12 @@ Player.prototype.reset = function() {
 		//reset enemy positions
 		for (i=0; i < allEnemies.length; i++) {
 			allEnemies[i].reset();
-		}
+		};
+
+		//reset item positions
+		for (i = 0; i < 7; i++) {
+			item[i].reset();
+		};
 	}
 
 	// reset score if hit enemy
@@ -202,6 +207,13 @@ collectItems.prototype.update = function() {
 
 };
 
+collectItems.prototype.reset = function() {
+	this.sprite = randomItem();
+	this.x = randomItemLocX();
+	this.y = randomItemLocY();
+
+};
+
 collectItems.prototype.render = function() {
 
     ctx.drawImage(Resources.get(this.sprite1), this.x, this.y);
@@ -239,9 +251,9 @@ for (i = 0; i < 4; i++) {
 	allEnemies[i] = new Enemy(randomRow(), randomSpeed());
 };
 
-var collectitem = [];
+var item = [];
 for (i = 0; i < 7; i++) {
-	collectitem[i] = new collectItems(randomItemLocX(), randomItemLocY());
+	item[i] = new collectItems(randomItemLocX(), randomItemLocY());
 };
 
 var charselector = new charSelector();
