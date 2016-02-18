@@ -1,7 +1,32 @@
+// collision detection bounding box dimensions
+var spriteWidth = 50;
+var spriteHeight = 50;
+
+// Initializing scores
+var waterScore = 0;
+var itemScore = 0;
+var highScore = [0, 0];
+
+// Player initial loc
+var playerInitX = 202;
+var playerInitY = 375;
+var numItems = 6;
+var numEnemies = 4;
+
+var Char = function() {
+    // bounding box for collision detection
+    this.width = spriteWidth;
+    this.height = spriteHeight;
+};
+Char.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
 // Enemies our player must avoid
 var Enemy = function(y, speed) {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
+    Char.call(this);
     this.sprite = 'images/enemy-bug.png';
 
     // Setting the Enemy initial location
@@ -10,10 +35,6 @@ var Enemy = function(y, speed) {
 
     // Setting the Enemy speed
     this.speed = speed;
-
-    // Collision Detection - Bounding Box
-    this.width = 50;
-    this.height = 50;
 };
 
 // Update the enemy's position
@@ -34,7 +55,7 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    Char.prototype.render.call(this);
 };
 
 // Resets enemy position after crossing canvas
@@ -48,14 +69,14 @@ Enemy.prototype.reset = function() {
 var Player = function() {
 
     // Use superclass Enemy to construct Player
-    Enemy.call(this);
+    Char.call(this);
     this.sprite = 'images/char-boy.png';
 
     // Set initial position
-    this.x = 202;
-    this.y = 375;
+    this.x = playerInitX;
+    this.y = playerInitY;
 
-    // Index for selecting character
+    // Index for char selection
     this.charIndex = 0;
     this.select = false;
 };
@@ -76,7 +97,6 @@ Player.prototype.checkCollision = function() {
             // collision detected!
             // reset player position
             return true;
-            break;
         }
     }
 };
@@ -87,7 +107,7 @@ Player.prototype.reset = function() {
     if (this.y < 0) {
         waterScore++;
         updateHighScore();
-        player.resetpos();
+        this.resetpos();
 
         //reset enemy positions
         for (i = 0; i < allEnemies.length; i++) {
@@ -95,7 +115,7 @@ Player.prototype.reset = function() {
         }
 
         //reset item positions w/o overlap
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < numItems; i++) {
             item[i].reset();
         }
         renderOverlap();
@@ -104,10 +124,10 @@ Player.prototype.reset = function() {
 
 Player.prototype.hitReset = function() {
     // reset score and position if hit enemy
-    if (player.checkCollision() === true) {
-        player.resetpos();
+    if (this.checkCollision() === true) {
+        this.resetpos();
         waterScore = 0;
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < numItems; i++) {
             item[i].reset();
         }
         itemScore = 0;
@@ -117,16 +137,17 @@ Player.prototype.hitReset = function() {
 
 Player.prototype.resetpos = function() {
     // Reset player back to origin
-    this.x = 202;
-    this.y = 375;
+    this.x = playerInitX;
+    this.y = playerInitY;
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    //ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    Char.prototype.render.call(this);
 };
 
 Player.prototype.handleInput = function(key) {
-    // Select character - character switches without stopping at 3nd of array
+    // Select character - character switches without stopping at end of array
     if (this.select === false) {
         var chars = ['images/char-boy.png',
             'images/char-cat-girl.png',
@@ -134,10 +155,10 @@ Player.prototype.handleInput = function(key) {
             'images/char-pink-girl.png',
             'images/char-princess-girl.png'
         ];
-        if (key == 'left' && this.index > 0 && this.charIndex <= chars.length) {
+        if (key == 'left' && this.charIndex > 0 && this.charIndex <= chars.length) {
             this.charIndex = this.charIndex - 1;
-            this.sprite = chars[this.index];
-        } else if (key == 'left' && this.index === 0) {
+            this.sprite = chars[this.charIndex];
+        } else if (key == 'left' && this.charIndex === 0) {
             this.charIndex = chars.length - 1;
             this.sprite = chars[this.charIndex];
         }
@@ -173,21 +194,20 @@ Player.prototype.handleInput = function(key) {
 // Character selector constructor
 var charSelector = function() {
     this.sprite = 'images/Selector.png';
-    this.x = 202;
-    this.y = 375;
+    this.x = playerInitX;
+    this.y = playerInitY;
 };
 
 charSelector.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    Char.prototype.render.call(this);
 };
 
 // Items constructor
 var collectItems = function(x, y) {
+    Char.call(this);
     this.sprite = randomItem(); // receive input from .change function
     this.x = x;
     this.y = y;
-    this.width = 50;
-    this.height = 50;
 };
 
 collectItems.prototype.update = function() {
@@ -223,7 +243,7 @@ collectItems.prototype.changeItemLoc = function() {
 };
 
 collectItems.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    Char.prototype.render.call(this);
 };
 
 // assigns a random speed and position to enemy class
@@ -245,26 +265,25 @@ function randomItem() {
         'images/Key.png',
         'images/Star.png'
     ];
-    return item[Math.floor(Math.random() * 6)];
+    return item[Math.floor(Math.random() * numItems)];
 }
 
 function randomItemLocX() {
     var x = [0, 101, 202, 303, 404];
-    return x[Math.floor(Math.random() * 5)];
+    return x[Math.floor(Math.random() * x.length)];
 }
 
 function randomItemLocY() {
     var y = [63, 146, 229];
-    return y[Math.floor(Math.random() * 3)];
+    return y[Math.floor(Math.random() * y.length)];
 }
 
 // check if item overlap exists
 function checkOverlap() {
-    mainLoop: for (i = 0; i < item.length; i++) {
+    for (i = 0; i < item.length; i++) {
         for (j = 0; j < item.length; j++) {
             if (item[i].x == item[j].x && item[i].y == item[j].y && i != j) {
                 return true;
-                break mainLoop;
             }
         }
     }
@@ -274,7 +293,7 @@ function checkOverlap() {
 // rearrange items onscreen if overlap exists
 function renderOverlap() {
     while (checkOverlap() === true) {
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < numItems; i++) {
             item[i].changeItemLoc();
         }
     }
@@ -290,20 +309,15 @@ function updateHighScore() {
     }
 }
 
-// Initializing score
-var waterScore = 0;
-var itemScore = 0;
-var highScore = [0, 0];
-
 // Instantiate 4 enemies
 var allEnemies = [];
-for (i = 0; i < 4; i++) {
+for (i = 0; i < numEnemies; i++) {
     allEnemies[i] = new Enemy(randomRow(), randomSpeed());
 }
 
 // Instantiate items
 var item = [];
-for (i = 0; i < 6; i++) {
+for (i = 0; i < numItems; i++) {
     item[i] = new collectItems(randomItemLocX(), randomItemLocY());
 }
 // Re-render items if overlap of items exists

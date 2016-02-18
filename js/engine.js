@@ -167,7 +167,7 @@ var Engine = (function(global) {
         ctx.font = "24px Helvetica";
         ctx.textAlign = "bottom";
         ctx.textBaseline = "bottom";
-        ctx.fillText("[High Scores]  " + "Water Jump: " + highScore[0] + "   " + "Items: " + " " + highScore[1], 32, 620);
+        ctx.fillText("[High Scores]  " + "Water Jumps: " + highScore[0] + "   " + "Items: " + " " + highScore[1], 32, 620);
     }
 
     /* This function is called by the render function and is called on each game
