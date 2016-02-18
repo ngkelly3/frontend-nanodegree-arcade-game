@@ -80,7 +80,6 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
         ctx.clearRect(0,0,canvas.width,canvas.height);
     }
 
@@ -92,15 +91,20 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
+
+        player.update();
+
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
 
-        player.update();
+
 
         item.forEach(function(collect) {
             collect.update();
         });
+
+
     }
 
     /* This function initially draws the "game level", it will then call

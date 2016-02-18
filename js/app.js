@@ -31,9 +31,14 @@ Enemy.prototype.update = function(dt) {
 	};
 
 	// Handles collision
-	player.checkCollision();
+			player.hitReset();
+			player.checkCollision();
+			player.reset();
+
 
 };
+
+
 
 // Draw the enemy on the screen
 Enemy.prototype.render = function() {
@@ -60,6 +65,8 @@ var Player = function() {
 	this.y = 375;
 	this.prevX = 0;
 	this.prevY = 0;
+	this.testX = 0;
+	this.testY = 0;
 	this.index = 0;
 	this.select = false;
 
@@ -67,8 +74,6 @@ var Player = function() {
 
 Player.prototype.update = function(dt) {
 
-	//checks if game was won
-	this.reset();
 
 };
 
@@ -103,17 +108,22 @@ Player.prototype.reset = function() {
 		};
 
 		//reset item positions w/o overlap
-		for (i = 0; i < 7; i++) {
+		for (i = 0; i < 6; i++) {
 			item[i].reset();
 		};
 		renderOverlap();
 	}
 
-	// reset score if hit enemy
-	if (this.checkCollision() == true) {
-		this.resetpos();
-		waterScore = 0;
-	};
+
+
+};
+
+Player.prototype.hitReset = function() {
+	// reset score and position if hit enemy
+		if (player.checkCollision() == true) {
+			player.resetpos();
+			waterScore = 0;
+		};
 
 };
 
@@ -159,10 +169,6 @@ Player.prototype.handleInput = function(key) {
 
 	// move player once character selected
 	if (this.select == true) {
-
-		// save state of current position before moving
-		this.prevX = this.x;
-		this.prevY = this.y;
 
 		if (key == 'left' && this.x > 0) {
 			this.x -= 101;
@@ -218,7 +224,7 @@ var collectItems = function(x, y) {
 collectItems.prototype.update = function() {
 
 	// Handles collision
-	this.itemCollision()
+	this.itemCollision();
 
 };
 
@@ -237,17 +243,15 @@ collectItems.prototype.itemCollision = function() {
 		player.height + player.y > this.y) {
 		// collision detected!
 		// delete item
-		if (this.sprite == 'images/Rock.png') {
-			player.x = player.prevX;
-			player.y = player.prevY;
-		} else {
 			itemScore++;
 
 			// redo below properly, terrible way to make an item disappear
 			this.x = -100;
-		};
+
 	};
+
 };
+
 collectItems.prototype.changeItemLoc = function() {
 	this.x = randomItemLocX();
 	this.y = randomItemLocY();
@@ -265,10 +269,9 @@ function randomItem() {
         'images/Gem_Orange.png',
         'images/Heart.png',
         'images/Key.png',
-        'images/Rock.png',
         'images/Star.png'];
 
-    return item[Math.floor(Math.random()*7)];
+    return item[Math.floor(Math.random()*6)];
 };
 function randomItemLocX() {
 	var x = [0, 101, 202, 303, 404];
@@ -296,7 +299,7 @@ function checkOverlap() {
 
 function renderOverlap() {
 	while (checkOverlap() == true) {
-		for (i = 0; i < 7; i++) {
+		for (i = 0; i < 6; i++) {
 			item[i].changeItemLoc();
 		};
 	};
@@ -315,7 +318,7 @@ for (i = 0; i < 4; i++) {
 
 // Instantiate new items
 var item = [];
-for (i = 0; i < 7; i++) {
+for (i = 0; i < 6; i++) {
 	item[i] = new collectItems(randomItemLocX(), randomItemLocY());
 };
 // Re-render items if overlap exists
