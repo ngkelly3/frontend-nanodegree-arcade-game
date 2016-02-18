@@ -26,7 +26,7 @@ var Engine = (function(global) {
         lastTime;
 
     canvas.width = 505;
-    canvas.height = 606;
+    canvas.height = 650;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -149,6 +149,8 @@ var Engine = (function(global) {
         renderEntities();
 
         renderScore();
+        renderItemScore();
+        renderHighScore();
     }
 
     function renderScore() {
@@ -160,6 +162,24 @@ var Engine = (function(global) {
         ctx.fillText("Water Jumps: " + waterScore, 32, 32);
 
     }
+
+    function renderItemScore() {
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        ctx.font = "24px Helvetica";
+        ctx.textAlign = "bottom";
+        ctx.textBaseline = "bottom";
+        ctx.fillText("Items Collected: " + itemScore, 250, 32);
+
+    };
+
+    function renderHighScore() {
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        ctx.font = "24px Helvetica";
+        ctx.textAlign = "bottom";
+        ctx.textBaseline = "bottom";
+        ctx.fillText("[High Scores]  " + "Water Jump: " + highScore[0] + "   " + "Items: " + " " + highScore[1], 32, 620);
+
+    };
 
     /* This function is called by the render function and is called on each game
      * tick. Its purpose is to then call the render functions you have defined

@@ -31,9 +31,8 @@ Enemy.prototype.update = function(dt) {
 	};
 
 	// Handles collision
-			player.hitReset();
-			player.checkCollision();
-			player.reset();
+	player.hitReset();
+	player.checkCollision();
 
 
 };
@@ -63,17 +62,14 @@ var Player = function() {
 	// Set initial position
 	this.x = 202;
 	this.y = 375;
-	this.prevX = 0;
-	this.prevY = 0;
-	this.testX = 0;
-	this.testY = 0;
 	this.index = 0;
 	this.select = false;
 
 };
 
+//checks if game ended
 Player.prototype.update = function(dt) {
-
+	this.reset();
 
 };
 
@@ -99,8 +95,8 @@ Player.prototype.reset = function() {
 	// reset char position if reaches the water
 	if (this.y < 0) {
 		waterScore++;
-		var delay = 10;
-		setTimeout(function(){player.resetpos()}, delay);
+		updateHighScore();
+		player.resetpos();
 
 		//reset enemy positions
 		for (i=0; i < allEnemies.length; i++) {
@@ -123,6 +119,12 @@ Player.prototype.hitReset = function() {
 		if (player.checkCollision() == true) {
 			player.resetpos();
 			waterScore = 0;
+
+			for (i = 0; i < 6; i++) {
+				item[i].reset();
+			};
+			itemScore = 0;
+			renderOverlap();
 		};
 
 };
@@ -244,7 +246,7 @@ collectItems.prototype.itemCollision = function() {
 		// collision detected!
 		// delete item
 			itemScore++;
-
+			updateHighScore();
 			// redo below properly, terrible way to make an item disappear
 			this.x = -100;
 
@@ -305,9 +307,22 @@ function renderOverlap() {
 	};
 };
 
+function updateHighScore() {
+
+	if (waterScore > highScore[0]) {
+		highScore[0] = waterScore;
+	};
+
+	if (itemScore > highScore[1]) {
+		highScore[1] = itemScore;
+	};
+
+};
+
 // Initializing score
 var waterScore = 0;
 var itemScore = 0;
+var highScore = [0,0];
 
 
 // Instantiate 4 enemies and player
